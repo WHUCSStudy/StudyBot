@@ -1,0 +1,9 @@
+# ccBot
+appid: # appid
+token: # token
+
+# 日志等级
+logLevel: "debug"
+
+# 强制指定当前操作系统环境, default 则自动判断
+isUnix: "default"
