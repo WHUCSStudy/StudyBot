@@ -2,37 +2,40 @@ package channel
 
 import (
 	"context"
-	"fmt"
 	"github.com/WHUCSStudy/StudyBot/logger"
+	"github.com/WHUCSStudy/StudyBot/setup"
 	"github.com/tencent-connect/botgo"
+	"github.com/tencent-connect/botgo/openapi"
 	"github.com/tencent-connect/botgo/token"
 	"github.com/tencent-connect/botgo/websocket"
 	"log"
-	"path"
-	"runtime"
+	"strconv"
+	"sync"
 	"time"
 )
 
-// 消息处理器，持有 openapi 对象
-func init() {
-}
+var Api openapi.OpenAPI
 
-func Run() {
+func Run(wg *sync.WaitGroup) {
+	defer wg.Done()
+
 	ctx := context.Background()
 	overrideLogger, _ := logger.New("./", logger.FatalLevel)
 	botgo.SetLogger(overrideLogger)
 	// 加载 appid 和 token
 	botToken := token.New(token.TypeBot)
-	if err := botToken.LoadFromConfig(getConfigPath("../config.yaml")); err != nil {
-		log.Fatalln(err)
-	}
+	botToken.AppID, _ = strconv.ParseUint(setup.Config.ChannelBot.Appid, 0, 64)
+	botToken.AccessToken = setup.Config.ChannelBot.Token
+	//if err := botToken.LoadFromConfig("./config.yaml"); err != nil {
+	//	log.Fatalln(err)
+	//}
 
 	// 初始化 openapi，正式环境
-	api := botgo.NewOpenAPI(botToken).WithTimeout(200 * time.Second)
+	Api = botgo.NewOpenAPI(botToken).WithTimeout(200 * time.Second)
 	// 把新的 logger 设置到 sdk 上，替换掉老的控制台 logger
 
 	// 获取 websocket 信息
-	wsInfo, err := api.WS(ctx, nil, "")
+	wsInfo, err := Api.WS(ctx, nil, "")
 	if err != nil {
 		log.Fatalln(err)
 	}
@@ -67,10 +70,10 @@ func Run() {
 	}
 }
 
-func getConfigPath(name string) string {
-	_, filename, _, ok := runtime.Caller(1)
-	if ok {
-		return fmt.Sprintf("%s/%s", path.Dir(filename), name)
-	}
-	return ""
-}
+//func getConfigPath(name string) string {
+//	_, filename, _, ok := runtime.Caller(1)
+//	if ok {
+//		return fmt.Sprintf("%s/%s", path.Dir(filename), name)
+//	}
+//	return ""
+//}

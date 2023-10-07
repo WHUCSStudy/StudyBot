@@ -7,20 +7,34 @@ import (
 )
 
 var Config = struct {
+	ChannelBot struct {
+		Appid string `yaml:"appid"`
+		Token string `yaml:"token"`
+	} `yaml:"channelBot"`
+
+	BaseUrl  string `yaml:"baseUrl,omitempty"`
 	LogLevel string `yaml:"logLevel,omitempty"`
-	IsUnix   string `yaml:"isUnix"`
-	Test     struct {
+	IsUnix   string `yaml:"isUnix,omitempty"`
+
+	GroupBot struct {
+		VerifyKey string `yaml:"verifyKey"`
+		BotQQ     string `yaml:"botQQ"`
+	} `yaml:"groupBot"`
+	Test struct {
 		AA string `yaml:"aa"`
 	} `yaml:"test"`
 }{
 	LogLevel: "debug",
 	IsUnix:   "default",
+	BaseUrl:  "http://127.0.0.1:8087",
 }
 
 func init() {
-	viper.SetConfigName("config")
-	viper.SetConfigType("yaml")
-	viper.AddConfigPath("./")
+
+	viper.SetConfigFile("./config.yaml")
+	//viper.SetConfigName("config")
+	//viper.SetConfigType("yaml")
+	//viper.AddConfigPath("./")
 	if err := viper.ReadInConfig(); err != nil {
 		log.Fatal("请您添加配置文件（将 config.yaml.demo 重命名为 config.yaml）")
 		return // 自动退出
@@ -51,3 +65,11 @@ func setConf(value reflect.Value, lastFields ...string) {
 		}
 	}
 }
+
+//func getConfigPath(name string) string {
+//	_, filename, _, ok := runtime.Caller(1)
+//	if ok {
+//		return fmt.Sprintf("%s/%s", path.Dir(filename), name)
+//	}
+//	return ""
+//}

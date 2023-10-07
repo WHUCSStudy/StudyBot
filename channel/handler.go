@@ -1,10 +1,14 @@
 package channel
 
 import (
+	"context"
+	"fmt"
 	"github.com/WHUCSStudy/StudyBot/logger"
+	"github.com/WHUCSStudy/StudyBot/setup"
 	"github.com/tencent-connect/botgo/dto"
 	"github.com/tencent-connect/botgo/dto/message"
 	"github.com/tencent-connect/botgo/event"
+	"regexp"
 	"strings"
 )
 
@@ -79,9 +83,38 @@ func InteractionHandler() event.InteractionEventHandler {
 	}
 }
 
+var isCall = true
+
 // ThreadEventHandler 论坛主贴事件
 func ThreadEventHandler() event.ThreadEventHandler {
 	return func(event *dto.WSPayload, data *dto.WSThreadData) error {
+		// sdk 不完善，存在多次调用的情况
+		// 这里交替调用解决问题
+		if !isCall {
+			isCall = true
+			return nil
+		}
+
+		logger.Debug("接收到论坛事件：", event.Type)
+		logger.Debug(data.ThreadInfo.Title)
+		title := func(toBeDecoded string) string {
+			matches := regexp.
+				MustCompile("\\{\"text\":\\{\"text\":\"([\\S\\s]+)\"},\"type\":1}").
+				FindAllStringSubmatch(toBeDecoded, -1)
+
+			for _, elem := range matches {
+				return strings.ReplaceAll(elem[1], "\\", "")
+			}
+			return ""
+		}(data.ThreadInfo.Title)
+		logger.Debug(title)
+		subject, _ := Api.Channel(context.Background(), data.ChannelID)
+
+		author := GetUserById(data.GuildID, data.AuthorID)
+		text := fmt.Sprintf("[%v] [%v] %v", subject.Name, author.Username, title)
+		logger.InfoF(text)
+		setup.MessageChannel <- text
+		isCall = false
 		return nil
 	}
 }

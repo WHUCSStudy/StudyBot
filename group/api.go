@@ -1,5 +1,0 @@
-package group
-
-func main() {
-
-}
