@@ -19,6 +19,7 @@ var Config = struct {
 	GroupBot struct {
 		VerifyKey string `yaml:"verifyKey"`
 		BotQQ     string `yaml:"botQQ"`
+		BotGroup  string `yaml:"botGroup"`
 	} `yaml:"groupBot"`
 	Test struct {
 		AA string `yaml:"aa"`
