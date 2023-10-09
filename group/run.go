@@ -13,7 +13,7 @@ func Run(wg *sync.WaitGroup) {
 
 	for text := range setup.MessageChannel {
 		messageChain := NewMessageChain().BuildText(text)
-		bot.SendGroupMsg(setup.Config.BaseUrl, *messageChain)
+		bot.SendGroupMsg(setup.Config.GroupBot.BotGroup, *messageChain)
 	}
 
 }

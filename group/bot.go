@@ -82,15 +82,14 @@ func postMsg(body string, apiPath string, result interface{}, option ...string) 
 	req := resty.New().R().SetContext(context.Background()).
 		SetBody(body).
 		SetHeader("sessionKey", sessionKey).
-		SetHeader("Content-Type", "application/json").
 		SetContentLength(true)
 	resp, err := req.
 		SetResult(result).
-		Post(setup.Config.BaseUrl + apiPath)
-	//logger.Debug(req.Header)
+		Post(setup.Config.GroupBot.BaseUrl + apiPath)
+	logger.Debug("to server: -> ", req.Body)
 	if err != nil {
 		logger.Error(err)
 	}
-	logger.Debug(resp)
+	logger.Debug("from server: <- ", resp)
 	return ""
 }

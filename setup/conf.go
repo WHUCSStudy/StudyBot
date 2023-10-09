@@ -12,7 +12,6 @@ var Config = struct {
 		Token string `yaml:"token"`
 	} `yaml:"channelBot"`
 
-	BaseUrl  string `yaml:"baseUrl,omitempty"`
 	LogLevel string `yaml:"logLevel,omitempty"`
 	IsUnix   string `yaml:"isUnix,omitempty"`
 
@@ -20,6 +19,7 @@ var Config = struct {
 		VerifyKey string `yaml:"verifyKey"`
 		BotQQ     string `yaml:"botQQ"`
 		BotGroup  string `yaml:"botGroup"`
+		BaseUrl   string `yaml:"baseUrl"`
 	} `yaml:"groupBot"`
 	Test struct {
 		AA string `yaml:"aa"`
@@ -27,7 +27,6 @@ var Config = struct {
 }{
 	LogLevel: "debug",
 	IsUnix:   "default",
-	BaseUrl:  "http://127.0.0.1:8087",
 }
 
 func init() {
