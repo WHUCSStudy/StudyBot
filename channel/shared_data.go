@@ -5,6 +5,9 @@ import "github.com/tencent-connect/botgo/dto"
 // UserMap Guild -> (userId -> userName)
 var UserMap = make(map[string]map[string]dto.User)
 
+// ChannelMap Guild -> (channelId -> channelName)
+var ChannelMap = make(map[string]map[string]dto.Channel)
+
 var FreshmanCourseMap = map[string]string{
 	"高等数学":   "https://pd.qq.com/s/hmjpd7fzl",
 	"大学物理":   "https://pd.qq.com/s/2ffmv9mh9",
@@ -21,4 +24,8 @@ var SophomoreCourseMap = map[string]string{
 	"最优化方法":   "https://pd.qq.com/s/7pamq1zlt",
 	"概率论":     "https://pd.qq.com/s/3a3dxj609",
 	"大学英语":    "https://pd.qq.com/s/1ooiiut87",
+}
+
+func init() {
+
 }

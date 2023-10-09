@@ -29,11 +29,8 @@ func SendPicToChannelMsg(
 	return resp.Body(), nil
 }
 
-type tempUser struct {
-	User dto.User `json:"user"`
-}
-
 func GetUserById(guildId string, userId string) dto.User {
+
 	if users := UserMap[guildId]; len(users) > 0 {
 		return users[userId]
 	}
@@ -56,6 +53,9 @@ func GetUserById(guildId string, userId string) dto.User {
 
 // GetChannelMembers 查询频道内所有成员（该 API 仅私域机器人可调用，难绷）
 func GetChannelMembers(guildId string) ([]dto.User, error) {
+	type tempUser struct {
+		User dto.User `json:"user"`
+	}
 	var tempUsers = make([]tempUser, 0)
 	_, err := resty.New().R().SetContext(context.Background()).SetAuthScheme("Bot").
 		SetAuthToken(setup.Config.ChannelBot.Appid+"."+setup.Config.ChannelBot.Token).
@@ -72,4 +72,25 @@ func GetChannelMembers(guildId string) ([]dto.User, error) {
 		users = append(users, elem.User)
 	}
 	return users, nil
+}
+
+func GetChannelById(guildId string, channelId string) dto.Channel {
+
+	if channels := ChannelMap[guildId]; len(channels) > 0 {
+		return channels[channelId]
+	}
+
+	// ChannelMap 未配置，配置
+	channels, err := Api.Channels(context.Background(), guildId)
+	if err != nil {
+		logger.Warning("获取频道失败：", err)
+		return dto.Channel{}
+	}
+
+	// 完善 map
+	ChannelMap[guildId] = make(map[string]dto.Channel)
+	for _, channel := range channels {
+		ChannelMap[guildId][channel.ID] = *channel
+	}
+	return ChannelMap[guildId][channelId]
 }

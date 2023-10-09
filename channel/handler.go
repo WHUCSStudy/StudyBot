@@ -1,7 +1,6 @@
 package channel
 
 import (
-	"context"
 	"fmt"
 	"github.com/WHUCSStudy/StudyBot/logger"
 	"github.com/WHUCSStudy/StudyBot/setup"
@@ -53,6 +52,9 @@ func ChannelEventHandler() event.ChannelEventHandler {
 // MemberEventHandler 处理成员变更事件
 func MemberEventHandler() event.GuildMemberEventHandler {
 	return func(event *dto.WSPayload, data *dto.WSGuildMemberData) error {
+		logger.InfoF("新成员 「%v」 加入了频道~", data.User.Username)
+		logger.Debug("更新全局 UserMap...")
+		UserMap[data.GuildID][data.User.ID] = *data.User
 		//fmt.Println(data)
 		return nil
 	}
@@ -108,11 +110,28 @@ func ThreadEventHandler() event.ThreadEventHandler {
 			return ""
 		}(data.ThreadInfo.Title)
 		logger.Debug(title)
-		subject, _ := Api.Channel(context.Background(), data.ChannelID)
-
+		subject := GetChannelById(data.GuildID, data.ChannelID)
 		author := GetUserById(data.GuildID, data.AuthorID)
-		text := fmt.Sprintf("[%v] [%v] %v", subject.Name, author.Username, title)
-		logger.InfoF(text)
+
+		jumpUrl := ""
+		msg := ""
+		switch GetChannelById(data.GuildID, subject.ParentID).Name {
+		case "提问板块（大一）":
+			jumpUrl = FreshmanCourseMap[subject.Name]
+			msg = "来自大一板块的提问"
+			logger.Debug(msg)
+		case "提问板块（大二）":
+			jumpUrl = SophomoreCourseMap[subject.Name]
+			msg = "来自大二板块的提问"
+			logger.Debug(msg)
+		default:
+			jumpUrl = "https://www.baidu.com"
+			msg = "其他板块，等会再转跳"
+			logger.Debug(msg)
+		}
+
+		text := fmt.Sprintf("[%v] [%v] {%v}\n%v \n去频道：%v", subject.Name, author.Username, msg, title, jumpUrl)
+		logger.InfoF("准备转发频道消息：%v\n", text)
 		setup.MessageChannel <- text
 		isCall = false
 		return nil
