@@ -79,12 +79,15 @@ func postMsg(body string, apiPath string, result interface{}, option ...string) 
 	if len(option) > 0 {
 		sessionKey = option[0]
 	}
-	resp, err := resty.New().R().SetContext(context.Background()).SetAuthScheme("Bot").
+	req := resty.New().R().SetContext(context.Background()).
 		SetBody(body).
 		SetHeader("sessionKey", sessionKey).
-		SetContentLength(true).
+		SetHeader("Content-Type", "application/json").
+		SetContentLength(true)
+	resp, err := req.
 		SetResult(result).
 		Post(setup.Config.BaseUrl + apiPath)
+	//logger.Debug(req.Header)
 	if err != nil {
 		logger.Error(err)
 	}
