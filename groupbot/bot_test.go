@@ -1,4 +1,4 @@
-package group
+package groupbot
 
 import (
 	"github.com/tencent-connect/botgo/log"

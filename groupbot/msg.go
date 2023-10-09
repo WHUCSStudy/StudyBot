@@ -1,4 +1,4 @@
-package group
+package groupbot
 
 type Message struct {
 	Type    string `json:"type"`

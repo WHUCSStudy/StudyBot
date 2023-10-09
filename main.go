@@ -1,8 +1,8 @@
 package main
 
 import (
-	"github.com/WHUCSStudy/StudyBot/channel"
-	"github.com/WHUCSStudy/StudyBot/group"
+	"github.com/WHUCSStudy/StudyBot/channelbot"
+	"github.com/WHUCSStudy/StudyBot/groupbot"
 	"sync"
 )
 
@@ -11,11 +11,11 @@ func main() {
 
 	// 启动群聊bot
 	wg.Add(1)
-	go group.Run(&wg)
+	go groupbot.Run(&wg)
 
 	// 启动频道bot
 	wg.Add(2)
-	go channel.Run(&wg)
+	go channelbot.Run(&wg)
 
 	wg.Wait()
 
