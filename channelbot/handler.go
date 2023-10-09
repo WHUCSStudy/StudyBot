@@ -72,6 +72,7 @@ func DirectMessageHandler() event.DirectMessageEventHandler {
 // CreateMessageHandler 处理消息事件
 func CreateMessageHandler() event.MessageEventHandler {
 	return func(event *dto.WSPayload, data *dto.WSMessageData) error {
+		MentionUser(data.ChannelID, data.Author.ID)
 		//fmt.Println(data)
 		return nil
 	}
@@ -130,7 +131,7 @@ func ThreadEventHandler() event.ThreadEventHandler {
 			logger.Debug(msg)
 		}
 
-		text := fmt.Sprintf("[%v] [%v] {%v}\n%v \n去频道：%v", subject.Name, author.Username, msg, title, jumpUrl)
+		text := fmt.Sprintf("[%v] [%v]\n{%v}\n%v \n去频道：%v", subject.Name, author.Username, msg, title, jumpUrl)
 		logger.InfoF("准备转发频道消息：%v\n", text)
 		setup.MessageChannel <- text
 		isCall = false

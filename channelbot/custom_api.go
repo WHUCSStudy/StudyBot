@@ -9,8 +9,19 @@ import (
 	"github.com/WHUCSStudy/StudyBot/setup"
 	"github.com/go-resty/resty/v2"
 	"github.com/tencent-connect/botgo/dto"
+	"github.com/tencent-connect/botgo/dto/message"
 )
 
+func MentionUser(channelId string, userId string) {
+	_, err := Api.PostMessage(context.Background(), channelId,
+		&dto.MessageToCreate{
+			Content: message.MentionUser(userId) + " 请及时选出优秀回答~",
+		})
+	if err != nil {
+		logger.Warning(err)
+		return
+	}
+}
 func SendPicToChannelMsg(
 	channelID string,
 	qrContent []byte,
@@ -57,16 +68,9 @@ func GetChannelMembers(guildId string) ([]dto.User, error) {
 		User dto.User `json:"user"`
 	}
 	var tempUsers = make([]tempUser, 0)
-	_, err := resty.New().R().SetContext(context.Background()).SetAuthScheme("Bot").
-		SetAuthToken(setup.Config.ChannelBot.Appid+"."+setup.Config.ChannelBot.Token).
-		SetContentLength(true).
-		SetQueryParam("limit", "400").
-		SetResult(&tempUsers).
-		SetPathParam("guild_id", guildId).
-		Get(fmt.Sprintf("%s://%s%s", "https", "api.sgroup.qq.com", "/guilds/{guild_id}/members"))
-	if err != nil {
-		return nil, err
-	}
+	postAuthMsg(map[string]string{"limit": "400"},
+		&tempUsers, "/guilds/{guild_id}/members",
+		map[string]string{"guild_id": guildId})
 	var users = make([]dto.User, 0)
 	for _, elem := range tempUsers {
 		users = append(users, elem.User)
@@ -93,4 +97,23 @@ func GetChannelById(guildId string, channelId string) dto.Channel {
 		ChannelMap[guildId][channel.ID] = *channel
 	}
 	return ChannelMap[guildId][channelId]
+}
+
+func postAuthMsg(
+	query map[string]string,
+	result interface{},
+	apiPath string,
+	pathParam map[string]string,
+) {
+	_, err := resty.New().R().SetContext(context.Background()).SetAuthScheme("Bot").
+		SetAuthToken(setup.Config.ChannelBot.Appid + "." + setup.Config.ChannelBot.Token).
+		SetContentLength(true).
+		SetQueryParams(query).
+		SetResult(result).
+		SetPathParams(pathParam).
+		Get(fmt.Sprintf("%s://%s%s", "https", "api.sgroup.qq.com", apiPath))
+	if err != nil {
+		logger.Warning(err)
+		return
+	}
 }
