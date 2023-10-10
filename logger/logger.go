@@ -19,7 +19,6 @@ const (
 var myLogger *log.Logger
 var logLevel string
 var logMap map[string]int
-var isUnix = true
 
 func init() {
 	myLogger = log.New(os.Stdout, "[Default]", log.Lshortfile|log.Ldate|log.Ltime)

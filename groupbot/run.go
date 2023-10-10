@@ -2,6 +2,7 @@ package groupbot
 
 import (
 	"github.com/WHUCSStudy/StudyBot/setup"
+	"strconv"
 	"sync"
 )
 
@@ -9,7 +10,8 @@ func Run(wg *sync.WaitGroup) {
 	defer wg.Done()
 
 	// 未启用 bot，直接结束
-	if !setup.Config.GroupBot.Enable {
+	enable, _ := strconv.ParseBool(setup.Config.GroupBot.Enable)
+	if !enable {
 		return
 	}
 

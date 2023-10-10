@@ -8,18 +8,19 @@ import (
 	"path"
 	"reflect"
 	"runtime"
+	"strconv"
 )
 
 var Config = struct {
 	ChannelBot struct {
-		Enable bool   `yaml:"enable"`
+		Enable string `yaml:"enable"`
 		Appid  string `yaml:"appid"`
 		Token  string `yaml:"token"`
 	} `yaml:"channelBot"`
 
 	LogLevel string `yaml:"logLevel,omitempty"`
 	GroupBot struct {
-		Enable    bool   `yaml:"enable"`
+		Enable    string `yaml:"enable"`
 		VerifyKey string `yaml:"verifyKey"`
 		BotQQ     string `yaml:"botQQ"`
 		BotGroup  string `yaml:"botGroup"`
@@ -34,8 +35,8 @@ var Config = struct {
 
 func init() {
 	// 默认只启用频道机器人
-	Config.ChannelBot.Enable = true
-	Config.GroupBot.Enable = false
+	Config.ChannelBot.Enable = "true"
+	Config.GroupBot.Enable = "false"
 
 	viper.SetConfigFile(GetAbsolutePath("config.yaml"))
 	//viper.SetConfigName("config")
@@ -49,6 +50,15 @@ func init() {
 	}
 
 	setConf(reflect.ValueOf(&Config))
+
+	if _, err := strconv.ParseBool(Config.ChannelBot.Enable); err != nil {
+		log.Fatalln("配置文件出错！")
+	}
+
+	if _, err := strconv.ParseBool(Config.GroupBot.Enable); err != nil {
+		log.Fatalln("配置文件出错！")
+	}
+
 }
 
 // Elem()用于获取指针指向的值，如果不是接口或指针会panics
@@ -88,8 +98,9 @@ func GetAbsolutePath(filePath string) (absolutePath string) {
 	}
 	_, err = os.Stat(absolutePath)
 	if os.IsNotExist(err) {
-		// 仍未找到则直接返回当前目录下的文件
-		log.Fatal(fmt.Sprintf("%s/../%s", path.Dir(filename), filePath))
+		// 仍未找到则说明没改名
+		log.Println("请您添加配置文件（将 config.yaml.demo 重命名为 config.yaml）")
+		os.Exit(0)
 	}
 
 	return
