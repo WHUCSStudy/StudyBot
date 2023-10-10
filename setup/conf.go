@@ -40,6 +40,7 @@ func init() {
 	//viper.SetConfigType("yaml")
 	//viper.AddConfigPath("./")
 	if err := viper.ReadInConfig(); err != nil {
+		log.Println(GetAbsolutePath("config.yaml"))
 		log.Fatal("请您添加配置文件（将 config.yaml.demo 重命名为 config.yaml）")
 		return // 自动退出
 	}
