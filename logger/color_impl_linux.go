@@ -1,6 +1,6 @@
-//go:build !linux
-
 package logger
+
+import "fmt"
 
 func colorPrint(color string, msg string, v ...any) {
 	myLogger.SetPrefix(color + "[" + msg + "]" + colorReset)
