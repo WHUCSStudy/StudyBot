@@ -12,14 +12,14 @@ import (
 
 var Config = struct {
 	ChannelBot struct {
-		Appid string `yaml:"appid"`
-		Token string `yaml:"token"`
+		Enable bool   `yaml:"enable"`
+		Appid  string `yaml:"appid"`
+		Token  string `yaml:"token"`
 	} `yaml:"channelBot"`
 
 	LogLevel string `yaml:"logLevel,omitempty"`
-	IsUnix   string `yaml:"isUnix,omitempty"`
-
 	GroupBot struct {
+		Enable    bool   `yaml:"enable"`
 		VerifyKey string `yaml:"verifyKey"`
 		BotQQ     string `yaml:"botQQ"`
 		BotGroup  string `yaml:"botGroup"`
@@ -30,18 +30,21 @@ var Config = struct {
 	} `yaml:"test"`
 }{
 	LogLevel: "debug",
-	IsUnix:   "default",
 }
 
 func init() {
+	// 默认只启用频道机器人
+	Config.ChannelBot.Enable = true
+	Config.GroupBot.Enable = false
 
 	viper.SetConfigFile(GetAbsolutePath("config.yaml"))
 	//viper.SetConfigName("config")
 	//viper.SetConfigType("yaml")
 	//viper.AddConfigPath("./")
 	if err := viper.ReadInConfig(); err != nil {
-		log.Println(GetAbsolutePath("config.yaml"))
-		log.Fatal("请您添加配置文件（将 config.yaml.demo 重命名为 config.yaml）")
+		//log.Println(GetAbsolutePath("config.yaml"))
+		log.Println("请您添加配置文件（将 config.yaml.demo 重命名为 config.yaml）")
+		os.Exit(0)
 		return // 自动退出
 	}
 

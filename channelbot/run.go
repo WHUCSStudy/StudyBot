@@ -19,6 +19,11 @@ var Api openapi.OpenAPI
 func Run(wg *sync.WaitGroup) {
 	defer wg.Done()
 
+	// 未启用 bot，直接结束
+	if !setup.Config.ChannelBot.Enable {
+		return
+	}
+
 	ctx := context.Background()
 	overrideLogger, _ := logger.New("./", logger.FatalLevel)
 	botgo.SetLogger(overrideLogger)

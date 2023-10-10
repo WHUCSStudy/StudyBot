@@ -1,9 +1,19 @@
-# ccBot
-appid: # appid
-token: # token
+# 以下模板所示字段均为默认值，请按需修改
+# 默认只启动频道 bot，在频道内通知消息
 
 # 日志等级
 logLevel: "debug"
 
-# 强制指定当前操作系统环境, default 则自动判断
-isUnix: "default"
+# 频道 bot
+channelBot:
+  enable: true
+  appid: "" # 从后台获取的 appid
+  token: "" # 从后台获取的 token
+
+# 群组 bot
+groupBot:
+  enable: false
+  verifyKey: ""
+  botQQ: ""
+  botGroup: ""
+  baseUrl: ""
