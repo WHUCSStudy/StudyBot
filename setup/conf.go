@@ -1,9 +1,13 @@
 package setup
 
 import (
+	"fmt"
 	"github.com/spf13/viper"
 	"log"
+	"os"
+	"path"
 	"reflect"
+	"runtime"
 )
 
 var Config = struct {
@@ -31,7 +35,7 @@ var Config = struct {
 
 func init() {
 
-	viper.SetConfigFile("./config.yaml")
+	viper.SetConfigFile(getConfigPath("config.yaml"))
 	//viper.SetConfigName("config")
 	//viper.SetConfigType("yaml")
 	//viper.AddConfigPath("./")
@@ -66,10 +70,17 @@ func setConf(value reflect.Value, lastFields ...string) {
 	}
 }
 
-//func getConfigPath(name string) string {
-//	_, filename, _, ok := runtime.Caller(1)
-//	if ok {
-//		return fmt.Sprintf("%s/%s", path.Dir(filename), name)
-//	}
-//	return ""
-//}
+func getConfigPath(name string) (configPath string) {
+	_, filename, _, ok := runtime.Caller(1)
+	if ok {
+		// 从源码获取，尝试查找源码根路径的 confName 文件
+		configPath = fmt.Sprintf("%s/../%s", path.Dir(filename), name)
+	}
+	_, err := os.Stat(configPath)
+	if os.IsNotExist(err) {
+		// 未找到则直接返回当前目录下的文件
+		configPath = "./" + name
+	}
+
+	return
+}
