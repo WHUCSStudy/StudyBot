@@ -35,7 +35,7 @@ var Config = struct {
 
 func init() {
 
-	viper.SetConfigFile(getConfigPath("config.yaml"))
+	viper.SetConfigFile(GetAbsolutePath("config.yaml"))
 	//viper.SetConfigName("config")
 	//viper.SetConfigType("yaml")
 	//viper.AddConfigPath("./")
@@ -70,16 +70,17 @@ func setConf(value reflect.Value, lastFields ...string) {
 	}
 }
 
-func getConfigPath(name string) (configPath string) {
+// GetAbsolutePath 获取从程序根路径开始的绝对路径
+func GetAbsolutePath(filePath string) (absolutePath string) {
 	_, filename, _, ok := runtime.Caller(1)
 	if ok {
 		// 从源码获取，尝试查找源码根路径的 confName 文件
-		configPath = fmt.Sprintf("%s/../%s", path.Dir(filename), name)
+		absolutePath = fmt.Sprintf("%s/../%s", path.Dir(filename), filePath)
 	}
-	_, err := os.Stat(configPath)
+	_, err := os.Stat(absolutePath)
 	if os.IsNotExist(err) {
 		// 未找到则直接返回当前目录下的文件
-		configPath = "./" + name
+		absolutePath = "./" + filePath
 	}
 
 	return
