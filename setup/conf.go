@@ -83,6 +83,11 @@ func GetAbsolutePath(filePath string) (absolutePath string) {
 		// 未找到则直接返回当前目录下的文件
 		absolutePath = "./" + filePath
 	}
+	_, err = os.Stat(absolutePath)
+	if os.IsNotExist(err) {
+		// 仍未找到则直接返回当前目录下的文件
+		log.Fatal(fmt.Sprintf("%s/../%s", path.Dir(filename), filePath))
+	}
 
 	return
 }
