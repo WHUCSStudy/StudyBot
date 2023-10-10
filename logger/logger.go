@@ -5,8 +5,6 @@ import (
 	"github.com/WHUCSStudy/StudyBot/setup"
 	"log"
 	"os"
-	"runtime"
-	"strconv"
 )
 
 const (
@@ -31,17 +29,6 @@ func init() {
 		"warning": 1,
 		"info":    2,
 		"debug":   3,
-	}
-
-	switch setup.Config.IsUnix {
-	case "default":
-		switch runtime.GOOS {
-		case "windows":
-			isUnix = false
-		default:
-		}
-	case "true", "false":
-		isUnix, _ = strconv.ParseBool(setup.Config.IsUnix)
 	}
 
 }
